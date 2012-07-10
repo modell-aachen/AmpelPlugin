@@ -1,0 +1,1 @@
+/home/modellaachen/qwiki/AmpelPlugin/pub/System/AmpelPlugin/ampel_src.js

@@ -1,0 +1,80 @@
+---+!! !AmpelPlugin
+<!--
+One line description, required for extensions repository catalog.
+BuildContrib will fill in the SHORTDESCRIPTION with the value of
+$SHORTDESCRIPTION from the .pm module, or you can redefine it here if you
+prefer.
+   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
+-->
+%SHORTDESCRIPTION%
+
+%TOC%
+
+---++ Usage
+This plugin defines the makro AMPEL which renders the traffic lights in a table on the page. It's status will depend on a date set in the table an the current date:<br>
+_long before_ the expiry it will be%GREEN% *green,* %ENDCOLOR%<br>
+_shortly before_ the expiry it will change to%ORANGE% *amber* %ENDCOLOR%and <br>
+_afterwards_ it will be%RED% *red.* %ENDCOLOR%
+
+*Currently this plugin only supports dates in the form DD.MM.YY or DD.MM.YYYY or DD.MM!* The latter format assumes the current year and is discouraged.
+
+
+The makro syntax is
+<pre>
+&#37;AMPEL{"ampel" WARN="2" DATE="Termin" DST="Ampel" DONE="Status" COND="erledigt|abgeschlossen"}&#37;
+</pre>
+where
+| *parameter* | *default value (mostly same as above)* | *explanation* |
+| _DEFAULT | "ampel" | The id of the table that is to receive the traffic lights. |
+| WARN | 2 | Number of days the light should switch to amber before the expiry date. |
+| DATE | "Termin" | The first entry in the column that should hold the expiry date. |
+| DST | "Ampel" | The first entry in the column that should display the traffic light |
+| DONE | _disabled_ | You can specify a column here in which certain keywords will disable the traffic light. |
+| COND | _disabled_ | If this regular expression is matched in the DONE column (with /../i) the traffic light will be disabled. |
+| WCOND | _disabled_ | If no date is beeing found but this RegEx matches the light will turn amber |
+*The contents of the DST column will not be displayed!*
+
+You can change the default-values in configure.
+---++ Examples
+This text
+<pre>
+&lt;table border="thin" id="example_table"&gt;
+&lt;tr&gt;&lt;td&gt; *Traffic light* &lt;/td&gt;&lt;td&gt;When&lt;/td&gt;&lt;td&gt;Comment&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;1.2.2001&lt;/td&gt;&lt;td&gt;This light should be red&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;2.3.2345&lt;/td&gt;&lt;td&gt;This light should be green unless far in the future&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;31.7.2021&lt;/td&gt;&lt;td&gt;This light should be amber from 31.7.2011 until august 2021&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+&#37;AMPEL{"example_table" WARN="3653" DATE="When" DST="Traffic light"}&#37;
+<!-- (WARN = 10*365 + 3 for leap years) -->
+</pre>
+produces<br>
+<img src="%ATTACHURLPATH%/example.png">
+
+---++ Tips and Tricks
+| *Question* | *Answer* |
+| When the heading in my FW-table is <nop>*heading* do I need to include the stars in DST? | No, all formating rules will be ignored, just write DST="heading" |
+| I want two identical headings, how do I controll where the light goes? | If your table is like<br /> %VBAR% <nop>*heading* %VBAR% <nop>*heading* %VBAR% ... <br /> you can use hidden text to differentiate:<br />%VBAR% <nop>*heading* %VBAR% <nop>*heading*&lt;span style="display: none"&gt;Light&lt;/span&gt;<nop> %VBAR% ...<br />%<nop>AMPEL{DST="headingLight"...}% |
+
+---++ Installation Instructions
+
+%$INSTALL_INSTRUCTIONS%
+
+---++ Info
+
+Many thanks to the following sponsors for supporting this work:
+   * Acknowledge any sponsors here
+
+|  Author(s): | |
+|  Copyright: | &copy; |
+|  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
+|  Release: | %$RELEASE% |
+|  Version: | %$VERSION% |
+|  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  Dependencies: | %$DEPENDENCIES% |
+|  Home page: | http://extensions.open-quality.com/bin/view/Extensions/AmpelPlugin |
+|  Support: | http://extensions.open-quality.com/bin/view/Support/AmpelPlugin |
+
+%META:FILEATTACHMENT{name="example.png" attachment="example.png" attr="" comment="" date="1312283293" size="12739" user="BaseUserMapping_333" version="1"}%
+
+<!-- Do _not_ attempt to edit this topic; it is auto-generated. -->

@@ -29,7 +29,7 @@ use Foswiki::Plugins ();    # For the API version
 
 our $VERSION = '$Rev: 11239 $';
 
-our $RELEASE = '1.1.0';
+our $RELEASE = '1.1.1';
 
 # Short description of this plugin
 our $SHORTDESCRIPTION = 'Signals the time remaining to a date in a Table with a traffic light.';

@@ -94,73 +94,77 @@ jQuery(document).ready(function() {
             var d = datum; // Wird das Ablaufdatum halten
 
             // Gehe alle Zeilen durch und setze ggf. Ampel
-            for (var zeileNr = 1; zeileNr < zeilen.length; zeileNr++) {
-                var zeile = zeilen[zeileNr];
-                var str = "";
-                if(zeile.cells === undefined) {
-                    continue;
-                }
-
-                // Pruefe, ob Aufgabe abgeschlossen
-                if(done > 0) {
-                    str = jQuery.trim(zeile.cells[done].textContent || zeile.cells[done].innerText);
-                    if(reg.test(str)) {
-                        zeile.cells[ampel].innerHTML = getTag(0, str); 
+            try {
+                for (var zeileNr = 1; zeileNr < zeilen.length; zeileNr++) {
+                    var zeile = zeilen[zeileNr];
+                    var str = "";
+                    if(zeile.cells === undefined) {
                         continue;
                     }
-                }
 
-                // Suche Termin-Datum
-                str = jQuery.trim(zeile.cells[termin].innerHTML);
-                try { 
-                    // Datum rausssuchen
-                    var split = /(\d\d?)\.(\d\d?)\.(\d{2,4})?/.exec(str);
-                    if(split === null) {
-                        // Check for warn-words
-                        if(WCond != null && WCond.test(str)) {
-                            d = datum;
-                        } else {
-                            // Englisches Format?
-                            split = /(\d\d?) (\w{3}) (\d{2,4})/.exec(str);
-                            if(split !== null) {
-                                var m = split[2];
-                                var monthArray = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "err");
-                                var gefunden = 0;
-                                for(var i = 0; i < monthArray.length; i++) {
-                                    if(m == monthArray[i]) {
-                                        m = i;
-                                        gefunden = 1;
-                                        break;
-                                    }
-                                }
-                                if(gefunden == 0) continue;
-                                d = new Date(split[3], m, split[1]);
+                    // Pruefe, ob Aufgabe abgeschlossen
+                    if(done > 0) {
+                        str = jQuery.trim(zeile.cells[done].textContent || zeile.cells[done].innerText);
+                        if(reg.test(str)) {
+                            zeile.cells[ampel].innerHTML = getTag(0, str); 
+                            continue;
+                        }
+                    }
+
+                    // Suche Termin-Datum
+                    str = jQuery.trim(zeile.cells[termin].innerHTML);
+                    try { 
+                        // Datum rausssuchen
+                        var split = /(\d\d?)\.(\d\d?)\.(\d{2,4})?/.exec(str);
+                        if(split === null) {
+                            // Check for warn-words
+                            if(WCond != null && WCond.test(str)) {
+                                d = datum;
                             } else {
-                                continue;
+                                // Englisches Format?
+                                split = /(\d\d?) (\w{3}) (\d{2,4})/.exec(str);
+                                if(split !== null) {
+                                    var m = split[2];
+                                    var monthArray = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "err");
+                                    var gefunden = 0;
+                                    for(var i = 0; i < monthArray.length; i++) {
+                                        if(m == monthArray[i]) {
+                                            m = i;
+                                            gefunden = 1;
+                                            break;
+                                        }
+                                    }
+                                    if(gefunden == 0) continue;
+                                    d = new Date(split[3], m, split[1]);
+                                } else {
+                                    continue;
+                                }
                             }
-                        }
-                    } else {    
-                        if(split[3] === undefined || split[3] === "") { // Falls ohne Jahr: 27.07.
-                            split[3] = datum.getFullYear(); // Kann auch 2-Stellig sein (IE)
-                        }
-                        if(split[3] < 2000) split[3] = Number(split[3]) + 2000; // JJ in JJJJ umwandeln
+                        } else {    
+                            if(split[3] === undefined || split[3] === "") { // Falls ohne Jahr: 27.07.
+                                split[3] = datum.getFullYear(); // Kann auch 2-Stellig sein (IE)
+                            }
+                            if(split[3] < 2000) split[3] = Number(split[3]) + 2000; // JJ in JJJJ umwandeln
 
-                        d = new Date(split[3], split[2]-1, split[1], 23, 59);
+                            d = new Date(split[3], split[2]-1, split[1], 23, 59);
+                        }
+                    }
+                    catch(e)
+                    {
+                        continue;
+                    }
+
+                    var tage = (d.getTime() - datum.getTime())/86400000;
+                    if (tage < 0) {
+                        zeile.cells[ampel].innerHTML = getTag(3, "schon "+Math.floor(-tage)+" Tage abgelaufen");
+                    } else if (tage <= AmpelWarn) {
+                        zeile.cells[ampel].innerHTML = getTag(2, "noch "+Math.floor(tage)+" Tage");
+                    } else {
+                        zeile.cells[ampel].innerHTML = getTag(1, "noch "+Math.floor(tage)+" Tage");
                     }
                 }
-                catch(e)
-                {
-                    continue;
-                }
-
-                var tage = (d.getTime() - datum.getTime())/86400000;
-                if (tage < 0) {
-                    zeile.cells[ampel].innerHTML = getTag(3, "schon "+Math.floor(-tage)+" Tage abgelaufen");
-                } else if (tage <= AmpelWarn) {
-                    zeile.cells[ampel].innerHTML = getTag(2, "noch "+Math.floor(tage)+" Tage");
-                } else {
-                    zeile.cells[ampel].innerHTML = getTag(1, "noch "+Math.floor(tage)+" Tage");
-                }
+            } catch (e) {
+                // Sometimes cells[...] can be undefined (ie. empty foswiki-tables have a hidden <tr> with only 1 <td>, or with colspans)
             }
         }
     }

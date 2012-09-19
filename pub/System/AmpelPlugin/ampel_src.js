@@ -22,7 +22,7 @@ jQuery(document).ready(function() {
         "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_o.gif' alt='' title='",
         "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_r.gif' alt='' title='",
         "'>"
-        )
+        );
 
     // Gehe alle Ampeln durch
     while(AmpelData.length >= 6) {

@@ -25,16 +25,15 @@ jQuery(document).ready(function() {
         );
 
     // Gehe alle Ampeln durch
-    while(AmpelData.length >= 6) {
-        // Pop den ganzen Kram in der umgekehrten Reihenfolge wieder vom Array runter:
-        var AmpelWCond = AmpelData.pop();
-        var AmpelDCond = AmpelData.pop();
-        var AmpelDText = AmpelData.pop();
-        var AmpelWarn = AmpelData.pop();
-        var AmpelTText = AmpelData.pop();
-        var AmpelAText = AmpelData.pop();
-        var AmpelID = AmpelData.pop();
-        //alert("ID: "+AmpelID+" Ampeltext: "+AmpelAText+" Termintext: " +AmpelTText+" Warn: " +AmpelWarn+" Done: " + AmpelDText+" Cond: "+AmpelDCond);
+    while(AmpelData.length > 0) {
+        var eachAmpel = AmpelData.pop();
+        var AmpelWCond = eachAmpel.wcheck;
+        var AmpelDCond = eachAmpel.dcheck;
+        var AmpelDText = eachAmpel.done;
+        var AmpelWarn = eachAmpel.warn;
+        var AmpelTText = eachAmpel.termin;
+        var AmpelAText = eachAmpel.dst;
+        var AmpelID = eachAmpel.id;
 
         // Diese Felder muessen vorhanden sein
         if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {continue;}

@@ -102,20 +102,13 @@ sub _AMPELTAG {
     my $warncheck = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
 
     # Script to pass parameters to ampel.js
-    # XXX this use of global variables is dirty
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$id.$ampel", <<HERE, 'JQUERYPLUGIN::FOSWIKI');
 <script type="text/javascript">
 <!--
 if(typeof(AmpelData) == "undefined") {
   AmpelData = new Array("$puburlpath");
 }
-AmpelData.push('$id');
-AmpelData.push('$ampel');
-AmpelData.push('$termin');
-AmpelData.push($warn);
-AmpelData.push('$done');
-AmpelData.push('$donecheck');
-AmpelData.push('$warncheck');
+AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck'});
 // -->
 </script>
 HERE

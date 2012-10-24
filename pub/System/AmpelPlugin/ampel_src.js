@@ -1,4 +1,6 @@
-jQuery(document).ready(function() {
+jQuery(document).ready(AmpelPluginRenderer);
+
+function AmpelPluginRenderer() {
     function getTag(level, altText) {
         if (altText === undefined) altText = '';
         return imgTags[level] + altText + imgTags[4];
@@ -7,13 +9,20 @@ jQuery(document).ready(function() {
     // Wenn dieser Test besteht, ist es hoffentlich ein Array
     if(typeof(AmpelData) !== "object" || AmpelData.length === undefined) return;
 
+    if(AmpelData.length == 0) {
+        return;
+    }
+
     var datum = new Date();
 
     // gleiche Einstellungen fuer alle Ampeln
     var puburlpath;
-    if(AmpelData.length > 0) {
-        puburlpath = AmpelData.shift();
+    puburlpath = AmpelData[0];
+    if(typeof(puburlpath) != "string") {
+        console.log("No puburlpath!");
+        return;
     }
+
     // Array mit img-Tags.
     // Ist fuer gilt: 0 -> Haeckchen, 1 -> gruen, 2 -> gelb, 3 -> rot
     var imgTags = new Array(
@@ -22,11 +31,12 @@ jQuery(document).ready(function() {
         "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_o.gif' alt='' title='",
         "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_r.gif' alt='' title='",
         "'>"
-        );
+    );
 
     // Gehe alle Ampeln durch
-    while(AmpelData.length > 0) {
-        var eachAmpel = AmpelData.pop();
+    // Ueberspringe ersten Index, da dort puburlpath
+    for(var aNr = 1; aNr < AmpelData.length; aNr++) {
+        var eachAmpel = AmpelData[aNr];
         var AmpelWCond = eachAmpel.wcheck;
         var AmpelDCond = eachAmpel.dcheck;
         var AmpelDText = eachAmpel.done;
@@ -167,4 +177,4 @@ jQuery(document).ready(function() {
             }
         }
     }
-});
+}

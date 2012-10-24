@@ -102,19 +102,16 @@ sub _AMPELTAG {
     my $warncheck = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
 
     # Script to pass parameters to ampel.js
-    Foswiki::Func::addToZone('script', "AMPELPLUGIN::$id.$ampel", <<HERE, 'JQUERYPLUGIN::FOSWIKI');
-<script type="text/javascript">
-<!--
-if(typeof(AmpelData) == "undefined") {
-  AmpelData = new Array("$puburlpath");
-}
-AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck'});
-// -->
-</script>
+    Foswiki::Func::addToZone('script', "AMPELPLUGIN::$id.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
+<script type="text/javascript"> AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck'}); </script>
 HERE
 
     # Add script that will insert traffic lights
-    Foswiki::Func::addToZone('script', 'SCRIPT::AMPELPLUGIN', '<script type="text/javascript" src="%PUBURL%/System/AmpelPlugin/ampel.js"></script>', 'PREFS::AMPELPLUGIN');
+    Foswiki::Func::addToZone('script', 'SCRIPT::AMPELPLUGIN', <<SCRIPT, 'JQUERYPLUGIN::FOSWIKI');
+<script type="text/javascript" src="%PUBURL%/System/AmpelPlugin/ampel.js"></script>
+<script type="text/javascript"> AmpelData = new Array("$puburlpath"); </script>
+SCRIPT
+
     return "";
 }
 

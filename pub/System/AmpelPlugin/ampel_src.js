@@ -46,7 +46,10 @@ function AmpelPluginRenderer() {
         var AmpelID = eachAmpel.id;
 
         // Diese Felder muessen vorhanden sein
-        if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {continue;}
+        if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
+            console.log("Necessary fields not found!");
+            continue;
+        }
 
         // WCond ist optional
         var WCond = null;
@@ -63,6 +66,7 @@ function AmpelPluginRenderer() {
                 if(tabellen.length != 0) {
                     tabellen = tabellen[0];
                 } else {
+                    console.log("No table found in div with id '" + AmpelID + "'!");
                     continue;
                 }
             }
@@ -97,6 +101,7 @@ function AmpelPluginRenderer() {
             }
             // Ohne "Ampel" und "Termin" laeuft das Plugin nicht, "Done" ist optional
             if(termin == -1 || ampel == -1) {
+                console.log("Light with id '" + AmpelID + "': Column for date, or destination not found!");
                 continue;
             }
 
@@ -108,6 +113,7 @@ function AmpelPluginRenderer() {
                     var zeile = zeilen[zeileNr];
                     var str = "";
                     if(zeile.cells === undefined) {
+                        // Kein Fehler, einfach eine leere Zelle
                         continue;
                     }
 
@@ -160,6 +166,7 @@ function AmpelPluginRenderer() {
                     }
                     catch(e)
                     {
+                        console.log("Error while parsing date '" + str + "': " + e);
                         continue;
                     }
 
@@ -175,6 +182,8 @@ function AmpelPluginRenderer() {
             } catch (e) {
                 // Sometimes cells[...] can be undefined (ie. empty foswiki-tables have a hidden <tr> with only 1 <td>, or with colspans)
             }
+        } else {
+            console.log("Id '" + AmpelID + "' not found!");
         }
     }
 }

@@ -1,6 +1,11 @@
 jQuery(document).ready(AmpelPluginRenderer);
 
 function AmpelPluginRenderer() {
+    function log(message) {
+        if(typeof console !== 'undefined' && console.log)
+            console.log(message);
+    }
+
     function getTag(level, altText) {
         if (altText === undefined) altText = '';
         return imgTags[level] + altText + imgTags[4];
@@ -19,7 +24,7 @@ function AmpelPluginRenderer() {
     var puburlpath;
     puburlpath = AmpelData[0];
     if(typeof(puburlpath) != "string") {
-        console.log("No puburlpath!");
+        log("No puburlpath!");
         return;
     }
 
@@ -47,7 +52,7 @@ function AmpelPluginRenderer() {
 
         // Diese Felder muessen vorhanden sein
         if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
-            console.log("Necessary fields not found!");
+            log("Necessary fields not found!");
             continue;
         }
 
@@ -66,7 +71,7 @@ function AmpelPluginRenderer() {
                 if(tabellen.length != 0) {
                     tabellen = tabellen[0];
                 } else {
-                    console.log("No table found in div with id '" + AmpelID + "'!");
+                    log("No table found in div with id '" + AmpelID + "'!");
                     continue;
                 }
             }
@@ -101,7 +106,7 @@ function AmpelPluginRenderer() {
             }
             // Ohne "Ampel" und "Termin" laeuft das Plugin nicht, "Done" ist optional
             if(termin == -1 || ampel == -1) {
-                console.log("Light with id '" + AmpelID + "': Column for date, or destination not found!");
+                log("Light with id '" + AmpelID + "': Column for date, or destination not found!");
                 continue;
             }
 
@@ -166,7 +171,7 @@ function AmpelPluginRenderer() {
                     }
                     catch(e)
                     {
-                        console.log("Error while parsing date '" + str + "': " + e);
+                        log("Error while parsing date '" + str + "': " + e);
                         continue;
                     }
 
@@ -183,7 +188,7 @@ function AmpelPluginRenderer() {
                 // Sometimes cells[...] can be undefined (ie. empty foswiki-tables have a hidden <tr> with only 1 <td>, or with colspans)
             }
         } else {
-            console.log("Id '" + AmpelID + "' not found!");
+            log("Id '" + AmpelID + "' not found!");
         }
     }
 }

@@ -108,7 +108,7 @@ HERE
 
     # Add script that will insert traffic lights
     Foswiki::Func::addToZone('script', 'SCRIPT::AMPELPLUGIN', <<SCRIPT, 'JQUERYPLUGIN::FOSWIKI');
-<script type="text/javascript" src="%PUBURL%/System/AmpelPlugin/ampel.js"></script>
+<script type="text/javascript" src="%PUBURL%/System/AmpelPlugin/ampel.js?version=$RELEASE"></script>
 <script type="text/javascript"> AmpelData = new Array("$puburlpath"); </script>
 SCRIPT
 

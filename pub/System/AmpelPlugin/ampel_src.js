@@ -1,6 +1,6 @@
-jQuery(document).ready(AmpelPluginRenderer);
+jQuery(AmpelPluginRenderer);
 
-function AmpelPluginRenderer() {
+function AmpelPluginRenderer($) {
     function log(message) {
         if(typeof console !== 'undefined' && console.log)
             console.log(message);
@@ -93,7 +93,7 @@ function AmpelPluginRenderer() {
             // Suche Spaltennummern raus
             for (var i = 0; i < head.cells.length; i++) {
                 var cell = head.cells[i].textContent || head.cells[i].innerText; // textContent for FF innerText for the rest 
-                cell = jQuery.trim(cell);
+                cell = $.trim(cell);
                 if(cell == AmpelAText) {
                     ampel = i;
                 }
@@ -124,7 +124,7 @@ function AmpelPluginRenderer() {
 
                     // Pruefe, ob Aufgabe abgeschlossen
                     if(done > 0) {
-                        str = jQuery.trim(zeile.cells[done].textContent || zeile.cells[done].innerText);
+                        str = $.trim(zeile.cells[done].textContent || zeile.cells[done].innerText);
                         if(reg.test(str)) {
                             zeile.cells[ampel].innerHTML = getTag(0, str); 
                             continue;
@@ -132,7 +132,7 @@ function AmpelPluginRenderer() {
                     }
 
                     // Suche Termin-Datum
-                    str = jQuery.trim(zeile.cells[termin].innerHTML);
+                    str = $.trim(zeile.cells[termin].innerHTML);
                     try { 
                         // Datum rausssuchen
                         var split = /(\d\d?)\.(\d\d?)\.(\d{2,4})?/.exec(str);

@@ -90,6 +90,7 @@ function AmpelPluginRenderer($) {
         var AmpelTText = eachAmpel.termin;
         var AmpelAText = eachAmpel.dst;
         var AmpelID = eachAmpel.id;
+        var AmpelMode = eachAmpel.mode;
 
         // Diese Felder muessen vorhanden sein
         if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
@@ -101,6 +102,16 @@ function AmpelPluginRenderer($) {
         var WCond = null;
         if(AmpelWCond != "") {
             WCond = new RegExp(AmpelWCond,"i");
+        }
+
+        // Mode
+        if(AmpelMode == "best") {
+            AmpelMode = true;
+        } else {
+            if(AmpelMode.length !== 0 && AmpelMode != "worst") {
+                log("Unknown mode: '" + AmpelMode + "' in id: '" + AmpelID + "'");
+            }
+            AmpelMode = false;
         }
 
         // Tabelle raussuchen und bearbeiten
@@ -178,7 +189,20 @@ function AmpelPluginRenderer($) {
                 // Suche Termin-Datum
                 str = $.trim(zeile.cells[termin].innerHTML);
 
-                d = parseDate(str);
+                var dates = str.split(";");
+                for(var i = 0; i < dates.length; i++) {
+                    var eachDate = parseDate(dates[i]);
+                    if(eachDate == null) continue;
+                    if(d === null) {
+                        d = eachDate;
+                        continue;
+                    }
+                    if(AmpelMode) {
+                        if(d.getTime() < eachDate.getTime()) d = eachDate;
+                    } else {
+                        if(d.getTime() > eachDate.getTime()) d = eachDate;
+                    }
+                }
 
                 // Check for warn-words
                 if(WCond != null && WCond.test(str)) {

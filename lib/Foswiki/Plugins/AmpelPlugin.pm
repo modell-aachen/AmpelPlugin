@@ -100,10 +100,11 @@ sub _AMPELTAG {
     my $done = $params->{DONE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DONE} || '';
     my $donecheck = $params->{COND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} || '';
     my $warncheck = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
+    my $mode = $params->{MODE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} || '';
 
     # Script to pass parameters to ampel.js
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$id.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
-<script type="text/javascript"> AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck'}); </script>
+<script type="text/javascript"> AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>
 HERE
 
     # Add script that will insert traffic lights

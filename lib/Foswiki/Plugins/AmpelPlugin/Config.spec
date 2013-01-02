@@ -14,6 +14,9 @@ $Foswiki::cfg{Extensions}{AmpelPlugin}{DST} = 'Ampel';
 $Foswiki::cfg{Extensions}{AmpelPlugin}{DATE} = 'Termin';
 # **STRING**
 # Default name of the column that might disable the light.<p>Set to empty to disable this feature</p>
+$Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} = '';
+# **STRING**
+# Default mode for grouped lights, set to empty, worst or best.<p>Defaults to 'worst' when left empty.</p>
 $Foswiki::cfg{Extensions}{AmpelPlugin}{DONE} = '';
 # **STRING**
 # Default RegEx that will disable the light.

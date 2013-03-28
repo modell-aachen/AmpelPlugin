@@ -36,24 +36,6 @@ our $SHORTDESCRIPTION = 'Signals the time remaining to a date in a Table with a 
 
 our $NO_PREFS_IN_TOPIC = 1;
 
-=begin TML
-
----++ initPlugin($topic, $web, $user) -> $boolean
-   * =$topic= - the name of the topic in the current CGI query
-   * =$web= - the name of the web in the current CGI query
-   * =$user= - the login name of the user
-   * =$installWeb= - the name of the web the plugin topic is in
-     (usually the same as =$Foswiki::cfg{SystemWebName}=)
-
-*REQUIRED*
-
-Called to initialise the plugin. If everything is OK, should return
-a non-zero value. On non-fatal failure, should write a message
-using =Foswiki::Func::writeWarning= and return 0. In this case
-%<nop>FAILEDPLUGINS% will indicate which plugins failed.
-
-=cut
-
 sub initPlugin {
     my ( $topic, $web, $user, $installWeb ) = @_;
 
@@ -72,23 +54,6 @@ sub initPlugin {
 
 sub _AMPELTAG {
     my($session, $params, $topic, $web, $topicObject) = @_;
-    # $session  - a reference to the Foswiki session object
-    #             (you probably won't need it, but documented in Foswiki.pm)
-    # $params=  - a reference to a Foswiki::Attrs object containing 
-    #             parameters.
-    #             This can be used as a simple hash that maps parameter names
-    #             to values, with _DEFAULT being the name for the default
-    #             (unnamed) parameter.
-    # $topic    - name of the topic in the query
-    # $web      - name of the web in the query
-    # $topicObject - a reference to a Foswiki::Meta object containing the
-    #             topic the macro is being rendered in (new for foswiki 1.1.x)
-    # Return: the result of processing the macro. This will replace the
-    # macro call in the final text.
-
-    # For example, %EXAMPLETAG{'hamburger' sideorder="onions"}%
-    # $params->{_DEFAULT} will be 'hamburger'
-    # $params->{sideorder} will be 'onions'
 
     # Common parameters
     my $puburlpath = Foswiki::Func::getPubUrlPath();

@@ -1,6 +1,6 @@
 jQuery(AmpelPluginRenderer);
 
-function AmpelPluginRenderer($) {
+function AmpelPluginRenderer($, renderID) {
     "use strict";
 
     function log(message) {
@@ -13,78 +13,7 @@ function AmpelPluginRenderer($) {
         return imgTags[level] + altText + imgTags[4];
     }
 
-    function parseDate(str) {
-        var date = null;
-        try { 
-            // Datum rausssuchen
-            var split = /(\d\d?)\.(\d\d?)\.(\d{2,4})?/.exec(str);
-            if(split === null) {
-                // Englisches Format?
-                split = /(\d\d?) (\w{3}) (\d{2,4})/.exec(str);
-                if(split !== null) {
-                    var m = split[2];
-                    var monthArray = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "err");
-                    var gefunden = 0;
-                    for(var i = 0; i < monthArray.length; i++) {
-                        if(m == monthArray[i]) {
-                            m = i;
-                            gefunden = 1;
-                            break;
-                        }
-                    }
-                    if(gefunden == 0) return -1;
-                    date = new Date(split[3], m, split[1], 23, 59);
-                } else {
-                    return null;
-                }
-            } else {    
-                if(split[3] === undefined || split[3] === "") { // Falls ohne Jahr: 27.07.
-                    split[3] = datum.getFullYear(); // Kann auch 2-Stellig sein (IE)
-                }
-                if(split[3] < 2000) split[3] = Number(split[3]) + 2000; // JJ in JJJJ umwandeln
-
-                date = new Date(split[3], split[2]-1, split[1], 23, 59);
-            }
-        }
-        catch(e)
-        {
-            log("Error while parsing date '" + str + "': " + e);
-            return null;
-        }
-        return date;
-    }
-
-    // Wenn dieser Test besteht, ist es hoffentlich ein Array
-    if(typeof(AmpelData) !== "object" || AmpelData.length === undefined) return;
-
-    if(AmpelData.length == 0) {
-        return;
-    }
-
-    var datum = new Date();
-
-    // gleiche Einstellungen fuer alle Ampeln
-    var puburlpath;
-    puburlpath = AmpelData[0];
-    if(typeof(puburlpath) != "string") {
-        log("No puburlpath!");
-        return;
-    }
-
-    // Array mit img-Tags.
-    // Ist fuer gilt: 0 -> Haeckchen, 1 -> gruen, 2 -> gelb, 3 -> rot
-    var imgTags = new Array(
-        "<img src='" + puburlpath + "/System/FamFamFamSilkIcons/tick.png' alt='' title='",
-        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_g.gif' alt='' title='",
-        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_o.gif' alt='' title='",
-        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_r.gif' alt='' title='",
-        "'>"
-    );
-
-    // Gehe alle Ampeln durch
-    // Ueberspringe ersten Index, da dort puburlpath
-    for(var aNr = 1; aNr < AmpelData.length; aNr++) {
-        var eachAmpel = AmpelData[aNr];
+    function renderAmpel($, eachAmpel) {
         var AmpelWCond = eachAmpel.wcheck;
         var AmpelDCond = eachAmpel.dcheck;
         var AmpelDText = eachAmpel.done;
@@ -97,7 +26,7 @@ function AmpelPluginRenderer($) {
         // Diese Felder muessen vorhanden sein
         if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
             log("Necessary fields not found!");
-            continue;
+            return;
         }
 
         // WCond ist optional
@@ -120,7 +49,7 @@ function AmpelPluginRenderer($) {
         var tabellen = document.getElementById(AmpelID);
         if(tabellen === null || tabellen === undefined) {
             log("Id '" + AmpelID + "' not found!");
-            continue;
+            return;
         }
 
         // Wenn das Objekt mit AmpelID ein div ist, benutze (erste) Tabelle darin
@@ -130,7 +59,7 @@ function AmpelPluginRenderer($) {
                 tabellen = tabellen[0];
             } else {
                 log("No table found in div with id '" + AmpelID + "'!");
-                continue;
+                return;
             }
         }
 
@@ -165,7 +94,7 @@ function AmpelPluginRenderer($) {
         // Ohne "Ampel" und "Termin" laeuft das Plugin nicht, "Done" ist optional
         if(termin == -1 || ampel == -1) {
             log("Light with id '" + AmpelID + "': Column for date, or destination not found!");
-            continue;
+            return;
         }
 
         // Gehe alle Zeilen durch und setze ggf. Ampel
@@ -227,5 +156,98 @@ function AmpelPluginRenderer($) {
         } catch (e) {
             // Sometimes cells[...] can be undefined (ie. empty foswiki-tables have a hidden <tr> with only 1 <td>, or with colspans)
         }
+    }
+
+    function parseDate(str) {
+        var date = null;
+        try { 
+            // Datum rausssuchen
+            var split = /(\d\d?)\.(\d\d?)\.(\d{2,4})?/.exec(str);
+            if(split === null) {
+                // Englisches Format?
+                split = /(\d\d?) (\w{3}) (\d{2,4})/.exec(str);
+                if(split !== null) {
+                    var m = split[2];
+                    var monthArray = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "err");
+                    var gefunden = 0;
+                    for(var i = 0; i < monthArray.length; i++) {
+                        if(m == monthArray[i]) {
+                            m = i;
+                            gefunden = 1;
+                            break;
+                        }
+                    }
+                    if(gefunden == 0) return null;
+                    date = new Date(split[3], m, split[1], 23, 59);
+                } else {
+                    return null;
+                }
+            } else {    
+                if(split[3] === undefined || split[3] === "") { // Falls ohne Jahr: 27.07.
+                    split[3] = datum.getFullYear(); // Kann auch 2-Stellig sein (IE)
+                }
+                if(split[3] < 2000) split[3] = Number(split[3]) + 2000; // JJ in JJJJ umwandeln
+
+                date = new Date(split[3], split[2]-1, split[1], 23, 59);
+            }
+        }
+        catch(e)
+        {
+            log("Error while parsing date '" + str + "': " + e);
+            return null;
+        }
+        return date;
+    }
+
+    // Wenn dieser Test besteht, ist es hoffentlich ein Array
+    if(typeof(AmpelData) !== "object" || AmpelData.length === undefined) return;
+
+    if(AmpelData.length == 0) {
+        return;
+    }
+
+    var datum = new Date();
+
+    // gleiche Einstellungen fuer alle Ampeln
+    var puburlpath;
+    puburlpath = AmpelData[0];
+    if(typeof(puburlpath) != "string") {
+        log("No puburlpath!");
+        return;
+    }
+
+    // Array mit img-Tags.
+    // Ist fuer gilt: 0 -> Haeckchen, 1 -> gruen, 2 -> gelb, 3 -> rot
+    var imgTags = new Array(
+        "<img src='" + puburlpath + "/System/FamFamFamSilkIcons/tick.png' alt='' title='",
+        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_g.gif' alt='' title='",
+        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_o.gif' alt='' title='",
+        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_r.gif' alt='' title='",
+        "'>"
+    );
+
+    // Gehe alle Ampeln durch
+    // Ueberspringe ersten Index, da dort puburlpath
+    for(var aNr = 1; aNr < AmpelData.length; aNr++) {
+        var eachAmpel = AmpelData[aNr];
+        var AmpelWCond = eachAmpel.wcheck;
+        var AmpelDCond = eachAmpel.dcheck;
+        var AmpelDText = eachAmpel.done;
+        var AmpelWarn = eachAmpel.warn;
+        var AmpelTText = eachAmpel.termin;
+        var AmpelAText = eachAmpel.dst;
+        var AmpelID = eachAmpel.id;
+        var AmpelMode = eachAmpel.mode;
+
+        if(renderID === undefined && eachAmpel.livequery) {
+            $('#'+AmpelID).livequery(
+                    (function(closure) {
+                        return function(){renderAmpel($, closure)};
+                    })(eachAmpel)
+            );
+        } else {
+            renderAmpel($, eachAmpel);
+        }
+
     }
 }

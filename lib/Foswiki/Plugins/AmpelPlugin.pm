@@ -66,14 +66,15 @@ sub _AMPELTAG {
     my $donecheck = $params->{COND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} || '';
     my $warncheck = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
     my $mode = $params->{MODE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} || '';
+    my $livequery = ($params->{LIVEQUERY}) ? 1 : 0;
 
     # Script to pass parameters to ampel.js
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$id.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
-<script type="text/javascript"> AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>
+<script type="text/javascript"> AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode', livequery:$livequery}); </script>
 HERE
 
     # Add script that will insert traffic lights
-    Foswiki::Func::addToZone('script', 'SCRIPT::AMPELPLUGIN', <<SCRIPT, 'JQUERYPLUGIN::FOSWIKI');
+    Foswiki::Func::addToZone('script', 'SCRIPT::AMPELPLUGIN', <<SCRIPT, 'JQUERYPLUGIN::FOSWIKI,JQUERYPLUGIN::LIVEQUERY'); # XXX hard to determine if livequery is required when there are multiple lights
 <script type="text/javascript" src="%PUBURL%/System/AmpelPlugin/ampel.js?version=$RELEASE"></script>
 <script type="text/javascript"> AmpelData = new Array("$puburlpath"); </script>
 SCRIPT

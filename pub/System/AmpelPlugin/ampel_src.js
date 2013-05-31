@@ -13,18 +13,18 @@ function AmpelPluginRenderer($) {
         return imgTags[level] + altText + imgTags[4];
     }
 
-    function renderAmpel($, eachAmpel) {
+    function renderAmpel($, eachAmpel, $tabellen) {
         var AmpelWCond = eachAmpel.wcheck;
         var AmpelDCond = eachAmpel.dcheck;
         var AmpelDText = eachAmpel.done;
         var AmpelWarn = eachAmpel.warn;
         var AmpelTText = eachAmpel.termin;
         var AmpelAText = eachAmpel.dst;
-        var AmpelID = eachAmpel.id;
         var AmpelMode = eachAmpel.mode;
+        var AmpelCSS = eachAmpel.css;
 
         // Diese Felder muessen vorhanden sein
-        if(typeof(AmpelID) != "string" || AmpelID == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
+        if(typeof(AmpelCSS) != "string" || AmpelCSS == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
             log("Necessary fields not found!");
             return;
         }
@@ -40,33 +40,30 @@ function AmpelPluginRenderer($) {
             AmpelMode = true;
         } else {
             if(AmpelMode.length !== 0 && AmpelMode != "worst") {
-                log("Unknown mode: '" + AmpelMode + "' in id: '" + AmpelID + "'");
+                log("Unknown mode: '" + AmpelMode + "' in light: '" + AmpelCSS + "'");
             }
             AmpelMode = false;
         }
 
-        // Tabelle raussuchen und bearbeiten
-        var tabellen = document.getElementById(AmpelID);
-        if(tabellen === null || tabellen === undefined) {
-            log("Id '" + AmpelID + "' not found!");
-            return;
-        }
-
-        // Wenn das Objekt mit AmpelID ein div ist, benutze (erste) Tabelle darin
+        // Wenn das Objekt mit AmpelCSS ein div ist, benutze (erste) Tabelle darin
+        var tabellen = $tabellen[0]; // livequery should deliver only one light
         if(tabellen.tagName.toUpperCase() == "DIV") {
             tabellen = tabellen.getElementsByTagName("table");
             if(tabellen.length != 0) {
                 tabellen = tabellen[0];
             } else {
-                log("No table found in div with id '" + AmpelID + "'!");
+                log("No table found in div with '" + AmpelCSS + "'!");
                 return;
             }
         }
 
-        var zeilen = tabellen.rows; 
+        var zeilen = tabellen.rows;
+        if(zeilen === undefined || zeilen.length === undefined || zeilen.length == 0) {
+            log("Table seems to be empty: " + AmpelCSS);
+            return;
+        }
 
         var head = zeilen[0]; // Kopfzeile
-
         var termin = -1; // Spaltennummer Termin
         var ampel = -1; // Spaltennummer Ampel
         var done = -1; // Spaltennummer Erledigt
@@ -93,7 +90,7 @@ function AmpelPluginRenderer($) {
         }
         // Ohne "Ampel" und "Termin" laeuft das Plugin nicht, "Done" ist optional
         if(termin == -1 || ampel == -1) {
-            log("Light with id '" + AmpelID + "': Column for date, or destination not found!");
+            log("Light with '" + AmpelCSS + "': Column for date, or destination not found!");
             return;
         }
 
@@ -230,17 +227,10 @@ function AmpelPluginRenderer($) {
     // Ueberspringe ersten Index, da dort puburlpath
     for(var aNr = 1; aNr < AmpelData.length; aNr++) {
         var eachAmpel = AmpelData[aNr];
-        var AmpelID = eachAmpel.id;
-
-        if(eachAmpel.livequery) {
-            $('#'+AmpelID).livequery(
-                    (function(closure) {
-                        return function(){renderAmpel($, closure)};
-                    })(eachAmpel)
-            );
-        } else {
-            renderAmpel($, eachAmpel);
-        }
-
+        $(eachAmpel.css).livequery(
+                (function(closure) {
+                    return function(){renderAmpel($, closure, $(this))};
+                })(eachAmpel)
+        );
     }
 }

@@ -2,7 +2,7 @@
 # ---++ AmpelPlugin
 # **STRING**
 # The default ID of the table that is to receive the traffic light.
-$Foswiki::cfg{Extensions}{AmpelPlugin}{ID} = 'ampel';
+$Foswiki::cfg{Extensions}{AmpelPlugin}{CSS} = '#ampel';
 # **NUMBER**
 # The default warning time (days to expiry when the light switches to amber).
 $Foswiki::cfg{Extensions}{AmpelPlugin}{WARN} = 2;

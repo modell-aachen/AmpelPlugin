@@ -58,7 +58,7 @@ sub _AMPELTAG {
     # Common parameters
     my $puburlpath = Foswiki::Func::getPubUrlPath();
     # Parameters
-    my $id = $params->{_DEFAULT} || $Foswiki::cfg{Extensions}{AmpelPlugin}{ID} || 'ampel';
+    my $id = $params->{_DEFAULT};
     my $warn = $params->{WARN} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WARN} || 2;
     my $ampel = $params->{DST} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DST} || 'Ampel';
     my $termin = $params->{DATE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DATE} || 'Termin';
@@ -66,11 +66,13 @@ sub _AMPELTAG {
     my $donecheck = $params->{COND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} || '';
     my $warncheck = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
     my $mode = $params->{MODE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} || '';
-    my $livequery = ($params->{LIVEQUERY}) ? 1 : 0;
+    my $query = $params->{QUERY} || $Foswiki::cfg{Extensions}{AmpelPlugin}{QUERY} || '#ampel';
+
+    my $css = ( ($id) ? "#$id" : $query );
 
     # Script to pass parameters to ampel.js
-    Foswiki::Func::addToZone('script', "AMPELPLUGIN::$id.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
-<script type="text/javascript"> AmpelData.push({id:'$id',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode', livequery:$livequery}); </script>
+    Foswiki::Func::addToZone('script', "AMPELPLUGIN::$css.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
+<script type="text/javascript"> AmpelData.push({css:'$css',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>
 HERE
 
     # Add script that will insert traffic lights

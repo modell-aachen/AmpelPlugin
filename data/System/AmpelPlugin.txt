@@ -25,18 +25,19 @@ The makro syntax is
 </pre>
 where
 | *parameter* | *default value (mostly same as above)* | *explanation* |
-| _DEFAULT | "ampel" | The id of the table that is to receive the traffic lights. |
+| _DEFAULT | "ampel" | The id of the table/div that is to receive the traffic lights. |
 | WARN | 2 | Number of days the light should switch to amber before the expiry date. |
 | DATE | "Termin" | The first entry in the column that should hold the expiry date. |
 | DST | "Ampel" | The first entry in the column that should display the traffic light |
 | DONE | _disabled_ | You can specify a column here in which certain keywords will disable the traffic light. |
 | COND | _disabled_ | If this regular expression is matched in the DONE column (with /../i) the traffic light will be disabled. |
 | WCOND | _disabled_ | If no date is beeing found but this RegEx matches the light will turn amber |
+| QUERY | _nothing_ | Every table/div that matches this (JQuery-) selector will receive a traffic light.%BR%%I%This parameter will be overwritten by =_DEFAULT=. |
 *The contents of the DST column will not be displayed!*
 
 You can change the default-values in configure.
 ---++ Examples
-This text
+---+++ Example with id
 <pre>
 &lt;table border="thin" id="example_table"&gt;
 &lt;tr&gt;&lt;td&gt; *Traffic light* &lt;/td&gt;&lt;td&gt;When&lt;/td&gt;&lt;td&gt;Comment&lt;/td&gt;&lt;/tr&gt;
@@ -50,6 +51,20 @@ This text
 </pre>
 produces<br>
 <img src="%ATTACHURLPATH%/example.png">
+---+++ Example with class
+<pre>
+&lt;div class="exampleClass"&gt;
+&#124; *Traffic light* &#124; *When* &#124; *Comment* &#124;
+&#124; &#124; 1.2.2001 &#124; This light should be red &#124;
+&#124; &#124; 2.3.2345 &#124; This light should be green unless far in the future &#124;
+&#124; &#124; 31.7.2021 &#124; This light should be amber from 31.7.2011 until august 2021 &#124;
+&lt;/div&gt;
+
+&#37;AMPEL{QUERY=".exampleClass" WARN="3653" DATE="When" DST="Traffic light"}&#37;
+<!-- (WARN = 10*365 + 3 for leap years) -->
+</pre>
+produces<br>
+<img src="%ATTACHURLPATH%/example2.png">
 
 ---++ Tips and Tricks
 | *Question* | *Answer* |
@@ -76,5 +91,6 @@ Many thanks to the following sponsors for supporting this work:
 |  Support: | http://extensions.open-quality.com/bin/view/Support/AmpelPlugin |
 
 %META:FILEATTACHMENT{name="example.png" attachment="example.png" attr="" comment="" date="1312283293" size="12739" user="BaseUserMapping_333" version="1"}%
+%META:FILEATTACHMENT{name="example2.png" attachment="example2.png" attr="" comment="" date="1312283293" size="12618" user="BaseUserMapping_333" version="1"}%
 
 <!-- Do _not_ attempt to edit this topic; it is auto-generated. -->

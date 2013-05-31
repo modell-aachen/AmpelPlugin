@@ -16,7 +16,7 @@ _long before_ the expiry it will be%GREEN% *green,* %ENDCOLOR%<br>
 _shortly before_ the expiry it will change to%ORANGE% *amber* %ENDCOLOR%and <br>
 _afterwards_ it will be%RED% *red.* %ENDCOLOR%
 
-*Currently this plugin only supports dates in the form DD.MM.YY or DD.MM.YYYY or DD.MM!* The latter format assumes the current year and is discouraged.
+*Currently this plugin only supports dates in the form ='DD mmm YYYY'= (eg. ='1 Jan 2000'=), ='DD.MM.YY'=, ='DD.MM.YYYY'= or ='DD.MM'=!* The latter format assumes the current year and is discouraged.
 
 
 The makro syntax is

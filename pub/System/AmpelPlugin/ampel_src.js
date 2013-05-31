@@ -1,6 +1,6 @@
 jQuery(AmpelPluginRenderer);
 
-function AmpelPluginRenderer($, renderID) {
+function AmpelPluginRenderer($) {
     "use strict";
 
     function log(message) {
@@ -230,16 +230,9 @@ function AmpelPluginRenderer($, renderID) {
     // Ueberspringe ersten Index, da dort puburlpath
     for(var aNr = 1; aNr < AmpelData.length; aNr++) {
         var eachAmpel = AmpelData[aNr];
-        var AmpelWCond = eachAmpel.wcheck;
-        var AmpelDCond = eachAmpel.dcheck;
-        var AmpelDText = eachAmpel.done;
-        var AmpelWarn = eachAmpel.warn;
-        var AmpelTText = eachAmpel.termin;
-        var AmpelAText = eachAmpel.dst;
         var AmpelID = eachAmpel.id;
-        var AmpelMode = eachAmpel.mode;
 
-        if(renderID === undefined && eachAmpel.livequery) {
+        if(eachAmpel.livequery) {
             $('#'+AmpelID).livequery(
                     (function(closure) {
                         return function(){renderAmpel($, closure)};

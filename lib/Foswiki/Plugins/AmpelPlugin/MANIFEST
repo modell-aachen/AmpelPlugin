@@ -1,0 +1,11 @@
+# Release manifest for AmpelPlugin
+data/System/AmpelPlugin.txt 0644 Documentation
+lib/Foswiki/Plugins/AmpelPlugin/Config.spec 0644 Configuration
+lib/Foswiki/Plugins/AmpelPlugin.pm 0644 Perl module that handles the macro
+pub/System/AmpelPlugin/ampel.js 0755 Script that handles the tables
+pub/System/AmpelPlugin/ampel.js.gz 0755 Script that handles the tables
+pub/System/AmpelPlugin/images/ampel_g.gif 0755 Green indicator
+pub/System/AmpelPlugin/images/ampel_o.gif 0755 Amber indicator
+pub/System/AmpelPlugin/images/ampel_r.gif 0755 Red indicator
+pub/System/AmpelPlugin/example.png 0755 Picture of the example
+

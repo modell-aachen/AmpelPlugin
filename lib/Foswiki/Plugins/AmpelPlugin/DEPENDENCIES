@@ -1,0 +1,6 @@
+# Dependencies for AmpelPlugin
+# Example:
+# Time::ParseDate,>=2003.0211,cpan,Required.
+# Foswiki::Plugins,>=1.2,perl,Requires version 1.2 of handler API.
+
+Foswiki::Plugins::JQueryPlugin,>=3.75,perl,Required

@@ -13,6 +13,11 @@ function AmpelPluginRenderer($) {
         return imgTags[level] + altText + imgTags[4];
     }
 
+    function getColoredDate( dateStr, color )  {
+        var str = '<span style="color: ' + color + '">' + dateStr + '</span>';
+        return str;
+    }
+
     function renderAmpel($, eachAmpel, $tabellen) {
         var AmpelWCond = eachAmpel.wcheck;
         var AmpelDCond = eachAmpel.dcheck;
@@ -72,11 +77,11 @@ function AmpelPluginRenderer($) {
         // Pruefe ob optionale Erledigt-Spalte vorhanden
         if(AmpelDText != "" && AmpelDCond != "") {
             reg = new RegExp(AmpelDCond,"i");
-        }    
+        }
 
         // Suche Spaltennummern raus
         for (var i = 0; i < head.cells.length; i++) {
-            var cell = head.cells[i].textContent || head.cells[i].innerText; // textContent for FF innerText for the rest 
+            var cell = head.cells[i].textContent || head.cells[i].innerText; // textContent for FF innerText for the rest
             cell = $.trim(cell);
             if(cell == AmpelAText) {
                 ampel = i;
@@ -109,7 +114,7 @@ function AmpelPluginRenderer($) {
                 if(done > 0) {
                     str = $.trim(zeile.cells[done].textContent || zeile.cells[done].innerText);
                     if(reg.test(str)) {
-                        zeile.cells[ampel].innerHTML = getTag(0, str); 
+                        zeile.cells[ampel].innerHTML = getTag(0, str);
                         continue;
                     }
                 }
@@ -142,12 +147,26 @@ function AmpelPluginRenderer($) {
                 }
 
                 var tage = (d.getTime() - datum.getTime())/86400000;
-                if (tage < 0) {
-                    zeile.cells[ampel].innerHTML = getTag(3, "schon "+Math.floor(-tage)+" Tage abgelaufen");
-                } else if (tage <= AmpelWarn) {
-                    zeile.cells[ampel].innerHTML = getTag(2, "noch "+Math.floor(tage)+" Tage");
+
+                // colorify due date in case preference key AMPELPLUGIN_HIDE_AMPEL ist set
+                var isHidden = eachAmpel.hidden == '1' || eachAmpel.hidden == 'true';
+                if ( isHidden ) {
+                    var due = $.trim(zeile.cells[termin].innerHTML);
+                    if (tage < 0) {
+                        zeile.cells[ampel].innerHTML = getColoredDate( due, 'red' );
+                    } else if (tage <= AmpelWarn) {
+                        zeile.cells[ampel].innerHTML = getColoredDate( due, 'orange' );
+                    } else {
+                        zeile.cells[ampel].innerHTML = getColoredDate( due, 'green' );
+                    }
                 } else {
-                    zeile.cells[ampel].innerHTML = getTag(1, "noch "+Math.floor(tage)+" Tage");
+                    if (tage < 0) {
+                        zeile.cells[ampel].innerHTML = getTag(3, "schon "+Math.floor(-tage)+" Tage abgelaufen");
+                    } else if (tage <= AmpelWarn) {
+                        zeile.cells[ampel].innerHTML = getTag(2, "noch "+Math.floor(tage)+" Tage");
+                    } else {
+                        zeile.cells[ampel].innerHTML = getTag(1, "noch "+Math.floor(tage)+" Tage");
+                    }
                 }
             }
         } catch (e) {
@@ -157,7 +176,7 @@ function AmpelPluginRenderer($) {
 
     function parseDate(str) {
         var date = null;
-        try { 
+        try {
             // Datum rausssuchen
             var split = /(\d\d?)\.(\d\d?)\.(\d{2,4})?/.exec(str);
             if(split === null) {
@@ -179,7 +198,7 @@ function AmpelPluginRenderer($) {
                 } else {
                     return null;
                 }
-            } else {    
+            } else {
                 if(split[3] === undefined || split[3] === "") { // Falls ohne Jahr: 27.07.
                     split[3] = datum.getFullYear(); // Kann auch 2-Stellig sein (IE)
                 }

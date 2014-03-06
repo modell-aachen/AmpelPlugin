@@ -70,9 +70,16 @@ sub _AMPELTAG {
 
     my $css = ( ($id) ? "#$id" : $query );
 
+    # additional option to disable rendering an 'ampel' (colorify the due date instead)
+    my $isHidden = Foswiki::Func::getPreferencesValue( 'AMPELPLUGIN_HIDE_AMPEL', $web ) || 0;
+    $isHidden = Foswiki::Func::getPreferencesValue( 'AMPELPLUGIN_HIDE_AMPEL' ) || 0 unless $isHidden;
+    if ( $isHidden eq 1 ) {
+        $ampel = $termin;
+    }
+
     # Script to pass parameters to ampel.js
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$css.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
-<script type="text/javascript"> AmpelData.push({css:'$css',dst:'$ampel',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>
+<script type="text/javascript"> AmpelData.push({css:'$css',dst:'$ampel',hidden: '$isHidden',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>
 HERE
 
     # Add script that will insert traffic lights

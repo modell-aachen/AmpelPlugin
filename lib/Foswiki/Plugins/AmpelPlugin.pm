@@ -77,6 +77,13 @@ sub _AMPELTAG {
         $ampel = $termin;
     }
 
+    # escape some parameters
+    $ampel =~ s#'#\\'#g;
+    $termin =~ s#'#\\'#g;
+    $done =~ s#'#\\'#g;
+    $donecheck =~ s#'#\\'#g;
+    $warncheck =~ s#'#\\'#g;
+
     # Script to pass parameters to ampel.js
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$css.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
 <script type="text/javascript"> AmpelData.push({css:'$css',dst:'$ampel',hidden: '$isHidden',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>

@@ -27,6 +27,8 @@ use warnings;
 use Foswiki::Func    ();    # The plugins API
 use Foswiki::Plugins ();    # For the API version
 
+use JSON;
+
 our $VERSION = '1.2';
 
 our $RELEASE = "1.2";
@@ -56,43 +58,47 @@ sub _AMPELTAG {
     my($session, $params, $topic, $web, $topicObject) = @_;
 
     # Common parameters
-    my $puburlpath = Foswiki::Func::getPubUrlPath();
+    my $systempath = Foswiki::Func::getPubUrlPath() . '/' . $Foswiki::cfg{SystemWebName} . '/';
     # Parameters
+    my %ampel = ();
     my $id = $params->{_DEFAULT};
-    my $warn = $params->{WARN} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WARN} || 2;
-    my $ampel = $params->{DST} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DST} || 'Ampel';
-    my $termin = $params->{DATE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DATE} || 'Termin';
-    my $done = $params->{DONE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DONE} || '';
-    my $donecheck = $params->{COND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} || '';
-    my $warncheck = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
-    my $mode = $params->{MODE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} || '';
     my $query = $params->{QUERY} || $Foswiki::cfg{Extensions}{AmpelPlugin}{QUERY} || '#ampel';
+    my $ampel = $params->{DST} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DST} || 'Ampel';
+    $ampel{warn} = $params->{WARN} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WARN} || 2;
+    $ampel{termin} = $params->{DATE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DATE} || 'Termin';
+    $ampel{done} = $params->{DONE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DONE} || '';
+    $ampel{dcheck} = $params->{COND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} || '';
+    $ampel{wcheck} = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
+    $ampel{mode} = $params->{MODE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} || '';
+    my $printable = $params->{printable};
+    $printable = $Foswiki::cfg{Extensions}{AmpelPlugin}{printable} unless defined $printable;
+    $ampel{printable} = ($printable)?1:0;
 
     my $css = ( ($id) ? "#$id" : $query );
+    $ampel{css} = $css;
 
     # additional option to disable rendering an 'ampel' (colorify the due date instead)
     my $isHidden = Foswiki::Func::getPreferencesValue( 'AMPELPLUGIN_HIDE_AMPEL', $web ) || 0;
     $isHidden = Foswiki::Func::getPreferencesValue( 'AMPELPLUGIN_HIDE_AMPEL' ) || 0 unless $isHidden;
     if ( $isHidden eq 1 ) {
-        $ampel = $termin;
+        $ampel = $ampel{termin};
     }
-
-    # escape some parameters
-    $ampel =~ s#'#\\'#g;
-    $termin =~ s#'#\\'#g;
-    $done =~ s#'#\\'#g;
-    $donecheck =~ s#'#\\'#g;
-    $warncheck =~ s#'#\\'#g;
+    $ampel{dst} = $ampel;
+    $ampel{hidden} = $isHidden;
 
     # Script to pass parameters to ampel.js
+    my $json = encode_json(\%ampel);
+    # we need to make sure this can not expand any further, to prevent injecting stuff into the script zone
+    $json =~ s#%#%<nop>#g;
+    $json =~ s#\$#\$<nop>#g;
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$css.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
-<script type="text/javascript"> AmpelData.push({css:'$css',dst:'$ampel',hidden: '$isHidden',termin:'$termin',warn:$warn,done:'$done',dcheck:'$donecheck',wcheck:'$warncheck',mode:'$mode'}); </script>
+<script type="text/plain" class="AmpelData">$json</script>
 HERE
 
     # Add script that will insert traffic lights
     Foswiki::Func::addToZone('script', 'SCRIPT::AMPELPLUGIN', <<SCRIPT, 'JQUERYPLUGIN::FOSWIKI,JQUERYPLUGIN::LIVEQUERY'); # XXX hard to determine if livequery is required when there are multiple lights
 <script type="text/javascript" src="%PUBURL%/System/AmpelPlugin/ampel.js?version=$RELEASE"></script>
-<script type="text/javascript"> AmpelData = new Array("$puburlpath"); </script>
+<script type="text/plain" class="AmpelCfg">{"systempath": "$systempath"}</script>
 SCRIPT
 
     return "";

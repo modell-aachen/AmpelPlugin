@@ -1,7 +1,13 @@
-jQuery(AmpelPluginRenderer);
-
 function AmpelPluginRenderer($) {
     "use strict";
+
+    var prince;
+    if(typeof(Prince) !== 'undefined') {
+        // called from prince
+        prince = 1;
+
+        $ = jQuery; // for some reason I need to set $ manually
+    }
 
     function log(message) {
         if(typeof console !== 'undefined' && console.log)
@@ -22,14 +28,16 @@ function AmpelPluginRenderer($) {
         var AmpelWCond = eachAmpel.wcheck;
         var AmpelDCond = eachAmpel.dcheck;
         var AmpelDText = eachAmpel.done;
-        var AmpelWarn = eachAmpel.warn;
+        var AmpelWarn = new Number(eachAmpel.warn);
         var AmpelTText = eachAmpel.termin;
         var AmpelAText = eachAmpel.dst;
         var AmpelMode = eachAmpel.mode;
         var AmpelCSS = eachAmpel.css;
 
+        if(!eachAmpel.printable && prince) return;
+
         // Diese Felder muessen vorhanden sein
-        if(typeof(AmpelCSS) != "string" || AmpelCSS == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || typeof(AmpelWarn) != "number") {
+        if(typeof(AmpelCSS) != "string" || AmpelCSS == "" || typeof(AmpelAText) != "string" || AmpelAText == "" || isNaN(AmpelWarn)) {
             log("Necessary fields not found!");
             return;
         }
@@ -62,13 +70,13 @@ function AmpelPluginRenderer($) {
             }
         }
 
-        var zeilen = tabellen.rows;
-        if(zeilen === undefined || zeilen.length === undefined || zeilen.length == 0) {
+        var $zeilen = $tabellen.find('tr');
+        if($zeilen.length === 0) {
             log("Table seems to be empty: " + AmpelCSS);
             return;
         }
 
-        var head = zeilen[0]; // Kopfzeile
+        var $head = $zeilen.first(); // Kopfzeile
         var termin = -1; // Spaltennummer Termin
         var ampel = -1; // Spaltennummer Ampel
         var done = -1; // Spaltennummer Erledigt
@@ -78,10 +86,10 @@ function AmpelPluginRenderer($) {
         if(AmpelDText != "" && AmpelDCond != "") {
             reg = new RegExp(AmpelDCond,"i");
         }
-
         // Suche Spaltennummern raus
-        for (var i = 0; i < head.cells.length; i++) {
-            var cell = head.cells[i].textContent || head.cells[i].innerText; // textContent for FF innerText for the rest
+        var $cells = $head.find('td,th');
+        for (var i = 0; i < $cells.length; i++) {
+            var cell = $cells.eq(i).text();
             cell = $.trim(cell);
             if(cell == AmpelAText) {
                 ampel = i;
@@ -101,26 +109,27 @@ function AmpelPluginRenderer($) {
 
         // Gehe alle Zeilen durch und setze ggf. Ampel
         try {
-            for (var zeileNr = 1; zeileNr < zeilen.length; zeileNr++) {
+            for (var zeileNr = 1; zeileNr < $zeilen.length; zeileNr++) {
                 var d = null; // Wird das Ablaufdatum halten
-                var zeile = zeilen[zeileNr];
+                var $zeile = $zeilen.eq(zeileNr);
                 var str = "";
-                if(zeile.cells === undefined) {
+                var $cells = $zeile.find('td,th');
+                if(!$cells.length) {
                     // Kein Fehler, einfach eine leere Zelle
                     continue;
                 }
 
                 // Pruefe, ob Aufgabe abgeschlossen
                 if(done > 0) {
-                    str = $.trim(zeile.cells[done].textContent || zeile.cells[done].innerText);
+                    str = $.trim($cells.eq(done).text());
                     if(reg.test(str)) {
-                        zeile.cells[ampel].innerHTML = getTag(0, str);
+                        $cells.eq(ampel).html(getTag(0, str));
                         continue;
                     }
                 }
 
                 // Suche Termin-Datum
-                str = $.trim(zeile.cells[termin].innerHTML);
+                str = $.trim($cells.eq(termin).text());
 
                 var dates = str.split(";");
                 for(var i = 0; i < dates.length; i++) {
@@ -150,24 +159,26 @@ function AmpelPluginRenderer($) {
 
                 // colorify due date in case preference key AMPELPLUGIN_HIDE_AMPEL ist set
                 var isHidden = eachAmpel.hidden == '1' || eachAmpel.hidden == 'true';
+                var content;
                 if ( isHidden ) {
-                    var due = $.trim(zeile.cells[termin].innerHTML);
+                    var due = $.trim($cells.eq(termin).text());
                     if (tage < 0) {
-                        zeile.cells[ampel].innerHTML = getColoredDate( due, 'red' );
+                        content = getColoredDate( due, 'red' );
                     } else if (tage <= AmpelWarn) {
-                        zeile.cells[ampel].innerHTML = getColoredDate( due, 'orange' );
+                        content = getColoredDate( due, 'orange' );
                     } else {
-                        zeile.cells[ampel].innerHTML = getColoredDate( due, 'green' );
+                        content = getColoredDate( due, 'green' );
                     }
                 } else {
                     if (tage < 0) {
-                        zeile.cells[ampel].innerHTML = getTag(3, "schon "+Math.floor(-tage)+" Tage abgelaufen");
+                        content = getTag(3, "schon "+Math.floor(-tage)+" Tage abgelaufen");
                     } else if (tage <= AmpelWarn) {
-                        zeile.cells[ampel].innerHTML = getTag(2, "noch "+Math.floor(tage)+" Tage");
+                        content = getTag(2, "noch "+Math.floor(tage)+" Tage");
                     } else {
-                        zeile.cells[ampel].innerHTML = getTag(1, "noch "+Math.floor(tage)+" Tage");
+                        content = getTag(1, "noch "+Math.floor(tage)+" Tage");
                     }
                 }
+                $cells.eq(ampel).html(content);
             }
         } catch (e) {
             // Sometimes cells[...] can be undefined (ie. empty foswiki-tables have a hidden <tr> with only 1 <td>, or with colspans)
@@ -216,40 +227,66 @@ function AmpelPluginRenderer($) {
     }
 
     // Wenn dieser Test besteht, ist es hoffentlich ein Array
-    if(typeof(AmpelData) !== "object" || AmpelData.length === undefined) return;
+//    if(typeof(AmpelData) !== "object" || AmpelData.length === undefined) return;
 
-    if(AmpelData.length == 0) {
-        return;
-    }
+//    if(AmpelData.length == 0) {
+//        return;
+//    }
 
     var datum = new Date();
 
+    var $cfg = $('SCRIPT.AmpelCfg');
+    if(!$cfg.length) {
+        log('No AmpelCfg');
+        return;
+    }
+    $cfg = $.parseJSON($cfg.text());
+    if(!$cfg) {
+        log('could not parse cfg');
+        return;
+    }
     // gleiche Einstellungen fuer alle Ampeln
-    var puburlpath;
-    puburlpath = AmpelData[0];
-    if(typeof(puburlpath) != "string") {
-        log("No puburlpath!");
+    var systempath = $cfg.systempath;
+    if(typeof(systempath) != "string") {
+        log("No systempath!");
         return;
     }
 
     // Array mit img-Tags.
     // Ist fuer gilt: 0 -> Haeckchen, 1 -> gruen, 2 -> gelb, 3 -> rot
     var imgTags = new Array(
-        "<img src='" + puburlpath + "/System/FamFamFamSilkIcons/tick.png' alt='' title='",
-        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_g.gif' alt='' title='",
-        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_o.gif' alt='' title='",
-        "<img src='" + puburlpath + "/System/AmpelPlugin/images/ampel_r.gif' alt='' title='",
+        "<img src='" + systempath + "FamFamFamSilkIcons/tick.png' alt='' title='",
+        "<img src='" + systempath + "AmpelPlugin/images/ampel_g.png' alt='' title='",
+        "<img src='" + systempath + "AmpelPlugin/images/ampel_o.png' alt='' title='",
+        "<img src='" + systempath + "AmpelPlugin/images/ampel_r.png' alt='' title='",
         "'>"
     );
 
     // Gehe alle Ampeln durch
-    // Ueberspringe ersten Index, da dort puburlpath
-    for(var aNr = 1; aNr < AmpelData.length; aNr++) {
-        var eachAmpel = AmpelData[aNr];
-        $(eachAmpel.css).livequery(
-                (function(closure) {
-                    return function(){renderAmpel($, closure, $(this))};
-                })(eachAmpel)
-        );
-    }
+    $('SCRIPT.AmpelData').each(function(idx, script) {
+        var data = $.parseJSON($(script).text());
+        if(!data || !data.css) {
+            log('No css in script: ' + script);
+        }
+        if(prince) {
+            // it seems livequery is not supported by prince yet
+            renderAmpel($, data, $(data.css));
+        } else {
+            (function(dataClosure){
+                $(dataClosure.css).livequery( function() {
+                    try {
+                        renderAmpel($, dataClosure, $(this));
+                    } catch (e) {
+                        log(e);
+                    }
+                });
+            })(data);
+        }
+    });
+}
+
+try {
+    jQuery(AmpelPluginRenderer);
+} catch (e) {
+    log(e);
 }

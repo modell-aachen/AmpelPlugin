@@ -26,6 +26,6 @@ $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} = '';
 $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} = '';
 # **BOOLEAN**
 # Lights can be printed with prince by default (if prince is configured with --script=[path to foswiki]/pub/System/AmpelPlugin/ampel.js)
-$Foswiki::cfg{Extensions}{AmpelPlugin}{printable} = 0;
+$Foswiki::cfg{Extensions}{AmpelPlugin}{printable} = 1;
 
 1;

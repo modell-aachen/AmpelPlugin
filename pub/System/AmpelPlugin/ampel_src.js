@@ -240,7 +240,7 @@ function AmpelPluginRenderer($) {
         log('No AmpelCfg');
         return;
     }
-    $cfg = $.parseJSON($cfg.text());
+    $cfg = $.parseJSON($cfg.html());
     if(!$cfg) {
         log('could not parse cfg');
         return;
@@ -264,7 +264,7 @@ function AmpelPluginRenderer($) {
 
     // Gehe alle Ampeln durch
     $('SCRIPT.AmpelData').each(function(idx, script) {
-        var data = $.parseJSON($(script).text());
+        var data = $.parseJSON($(script).html());
         if(!data || !data.css) {
             log('No css in script: ' + script);
         }

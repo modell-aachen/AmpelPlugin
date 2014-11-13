@@ -86,6 +86,15 @@ sub _AMPELTAG {
     $ampel{dst} = $ampel;
     $ampel{hidden} = $isHidden;
 
+    # expand parameters
+    foreach my $key (keys %ampel) {
+        $ampel{$key} = Foswiki::Func::expandCommonVariables(
+            Foswiki::Func::decodeFormatTokens($ampel{$key}),
+            $web,
+            $topic
+        );
+    }
+
     # Script to pass parameters to ampel.js
     my $json = encode_json(\%ampel);
     # we need to make sure this can not expand any further, to prevent injecting stuff into the script zone

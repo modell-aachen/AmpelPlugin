@@ -226,13 +226,6 @@ function AmpelPluginRenderer($) {
         return date;
     }
 
-    // Wenn dieser Test besteht, ist es hoffentlich ein Array
-//    if(typeof(AmpelData) !== "object" || AmpelData.length === undefined) return;
-
-//    if(AmpelData.length == 0) {
-//        return;
-//    }
-
     var datum = new Date();
 
     var $cfg = $('SCRIPT.AmpelCfg');

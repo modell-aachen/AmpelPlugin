@@ -91,6 +91,7 @@ sub _AMPELTAG {
     # we need to make sure this can not expand any further, to prevent injecting stuff into the script zone
     $json =~ s#%#%<nop>#g;
     $json =~ s#\$#\$<nop>#g;
+    $json = Encode::decode($Foswiki::cfg{Site}{CharSet}, $json);
     Foswiki::Func::addToZone('script', "AMPELPLUGIN::$css.$ampel", <<HERE, 'SCRIPT::AMPELPLUGIN');
 <script type="text/plain" class="AmpelData">$json</script>
 HERE

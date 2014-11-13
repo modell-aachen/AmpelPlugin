@@ -24,5 +24,8 @@ $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} = '';
 # **STRING**
 # Default RegEx that will make the light turn amber. Will be tested on the DATE column;<p>Set to empty to disable.
 $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} = '';
+# **BOOLEAN**
+# Lights can be printed with prince by default (if prince is configured with --script=[path to foswiki]/pub/System/AmpelPlugin/ampel.js)
+$Foswiki::cfg{Extensions}{AmpelPlugin}{printable} = 1;
 
 1;

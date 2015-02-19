@@ -60,6 +60,7 @@ function AmpelPluginRenderer($) {
 
         // Wenn das Objekt mit AmpelCSS ein div ist, benutze (erste) Tabelle darin
         var tabellen = $tabellen[0]; // livequery should deliver only one light
+        if(!tabellen) return; // however under prince this can happen
         if(tabellen.tagName.toUpperCase() == "DIV") {
             tabellen = tabellen.getElementsByTagName("table");
             if(tabellen.length != 0) {

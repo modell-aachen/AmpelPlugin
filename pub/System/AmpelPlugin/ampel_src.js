@@ -271,7 +271,7 @@ function AmpelPluginRenderer($) {
                     try {
                         renderAmpel($, dataClosure, $(this));
                     } catch (e) {
-                        log(e);
+                        window.console && console.log(e);
                     }
                 });
             })(data);
@@ -282,5 +282,5 @@ function AmpelPluginRenderer($) {
 try {
     jQuery(AmpelPluginRenderer);
 } catch (e) {
-    log(e);
+    window.console && console.log(e);
 }

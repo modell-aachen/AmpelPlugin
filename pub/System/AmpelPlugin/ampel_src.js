@@ -26,6 +26,9 @@ function AmpelPluginRenderer($) {
 
     function renderAmpel($, eachAmpel, $tabellen) {
         var AmpelWCond = eachAmpel.wcheck;
+        var AmpelGOverride = eachAmpel.go;
+        var AmpelAOverride = eachAmpel.ao;
+        var AmpelROverride = eachAmpel.ro;
         var AmpelDCond = eachAmpel.dcheck;
         var AmpelDText = eachAmpel.done;
         var AmpelWarn = new Number(eachAmpel.warn);
@@ -46,6 +49,20 @@ function AmpelPluginRenderer($) {
         var WCond = null;
         if(AmpelWCond != "") {
             WCond = new RegExp(AmpelWCond,"i");
+        }
+
+        // Overrides
+        var GOverride = null;
+        if(AmpelGOverride != "") {
+            GOverride = new RegExp(AmpelGOverride,"i");
+        }
+        var AOverride = null;
+        if(AmpelAOverride != "") {
+            AOverride = new RegExp(AmpelAOverride,"i");
+        }
+        var ROverride = null;
+        if(AmpelROverride != "") {
+            ROverride = new RegExp(AmpelROverride,"i");
         }
 
         // Mode
@@ -123,8 +140,21 @@ function AmpelPluginRenderer($) {
                 // Pruefe, ob Aufgabe abgeschlossen
                 if(done > 0) {
                     str = $.trim($cells.eq(done).text());
+                    var light;
+                    if(GOverride != null && GOverride.test(str)) {
+                        light = getTag(1, "");
+                    }
+                    if(AOverride != null && AOverride.test(str)) {
+                        light = getTag(2, "bald abgelaufen");
+                    }
+                    if(ROverride != null && ROverride.test(str)) {
+                        light = getTag(3, "abgelaufen");
+                    }
                     if(reg.test(str)) {
-                        $cells.eq(ampel).html(getTag(0, str));
+                        light = getTag(0, str)
+                    }
+                    if(light) {
+                        $cells.eq(ampel).html(light);
                         continue;
                     }
                 }

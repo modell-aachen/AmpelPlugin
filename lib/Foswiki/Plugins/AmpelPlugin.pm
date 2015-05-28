@@ -69,6 +69,9 @@ sub _AMPELTAG {
     $ampel{done} = $params->{DONE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{DONE} || '';
     $ampel{dcheck} = $params->{COND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{COND} || '';
     $ampel{wcheck} = $params->{WCOND} || $Foswiki::cfg{Extensions}{AmpelPlugin}{WCOND} || '';
+    $ampel{go} = $params->{GREENOVERRIDE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{GREENOVERRIDE} || '';
+    $ampel{ao} = $params->{AMBEROVERRIDE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{AMBEROVERRIDE} || '';
+    $ampel{ro} = $params->{REDOVERRIDE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{REDOVERRIDE} || '';
     $ampel{mode} = $params->{MODE} || $Foswiki::cfg{Extensions}{AmpelPlugin}{MODE} || '';
     my $printable = $params->{printable};
     $printable = $Foswiki::cfg{Extensions}{AmpelPlugin}{printable} unless defined $printable;

@@ -181,7 +181,7 @@ function AmpelPluginRenderer($) {
                 if(WCond != null && WCond.test(str)) {
                     d = datum;
                 }
-                if(d === null || d.getTime() == 0) {
+                if(d === null || d.getUTCFullYear() <= 1970) {
                     // kein Datum gefunden oder epoch == 0
                     continue;
                 }

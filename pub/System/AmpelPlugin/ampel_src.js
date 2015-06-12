@@ -140,7 +140,7 @@ function AmpelPluginRenderer($) {
                 // Pruefe, ob Aufgabe abgeschlossen
                 if(done > 0) {
                     str = $.trim($cells.eq(done).text());
-                    var light;
+                    var light = '';
                     if(GOverride != null && GOverride.test(str)) {
                         light = getTag(1, "");
                     }
@@ -151,7 +151,7 @@ function AmpelPluginRenderer($) {
                         light = getTag(3, "abgelaufen");
                     }
                     if(reg.test(str)) {
-                        light = getTag(0, str)
+                        light = getTag(0, str);
                     }
                     if(light) {
                         $cells.eq(ampel).html(light);

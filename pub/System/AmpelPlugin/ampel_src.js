@@ -26,6 +26,9 @@ function AmpelPluginRenderer($) {
 
     function renderAmpel($, eachAmpel, $tabellen) {
         var AmpelWCond = eachAmpel.wcheck;
+        var AmpelGOverride = eachAmpel.go;
+        var AmpelAOverride = eachAmpel.ao;
+        var AmpelROverride = eachAmpel.ro;
         var AmpelDCond = eachAmpel.dcheck;
         var AmpelDText = eachAmpel.done;
         var AmpelWarn = new Number(eachAmpel.warn);
@@ -48,6 +51,20 @@ function AmpelPluginRenderer($) {
             WCond = new RegExp(AmpelWCond,"i");
         }
 
+        // Overrides
+        var GOverride = null;
+        if(AmpelGOverride != "") {
+            GOverride = new RegExp(AmpelGOverride,"i");
+        }
+        var AOverride = null;
+        if(AmpelAOverride != "") {
+            AOverride = new RegExp(AmpelAOverride,"i");
+        }
+        var ROverride = null;
+        if(AmpelROverride != "") {
+            ROverride = new RegExp(AmpelROverride,"i");
+        }
+
         // Mode
         if(AmpelMode == "best") {
             AmpelMode = true;
@@ -60,6 +77,7 @@ function AmpelPluginRenderer($) {
 
         // Wenn das Objekt mit AmpelCSS ein div ist, benutze (erste) Tabelle darin
         var tabellen = $tabellen[0]; // livequery should deliver only one light
+        if(!tabellen) return; // however under prince this can happen
         if(tabellen.tagName.toUpperCase() == "DIV") {
             tabellen = tabellen.getElementsByTagName("table");
             if(tabellen.length != 0) {
@@ -122,8 +140,21 @@ function AmpelPluginRenderer($) {
                 // Pruefe, ob Aufgabe abgeschlossen
                 if(done > 0) {
                     str = $.trim($cells.eq(done).text());
+                    var light = '';
+                    if(GOverride != null && GOverride.test(str)) {
+                        light = getTag(1, "");
+                    }
+                    if(AOverride != null && AOverride.test(str)) {
+                        light = getTag(2, "bald abgelaufen");
+                    }
+                    if(ROverride != null && ROverride.test(str)) {
+                        light = getTag(3, "abgelaufen");
+                    }
                     if(reg.test(str)) {
-                        $cells.eq(ampel).html(getTag(0, str));
+                        light = getTag(0, str);
+                    }
+                    if(light) {
+                        $cells.eq(ampel).html(light);
                         continue;
                     }
                 }
@@ -150,8 +181,8 @@ function AmpelPluginRenderer($) {
                 if(WCond != null && WCond.test(str)) {
                     d = datum;
                 }
-                if(d === null) {
-                    // kein Datum gefunden
+                if(d === null || d.getUTCFullYear() <= 1970) {
+                    // kein Datum gefunden oder epoch == 0
                     continue;
                 }
 
@@ -270,7 +301,7 @@ function AmpelPluginRenderer($) {
                     try {
                         renderAmpel($, dataClosure, $(this));
                     } catch (e) {
-                        log(e);
+                        window.console && console.log(e);
                     }
                 });
             })(data);
@@ -281,5 +312,5 @@ function AmpelPluginRenderer($) {
 try {
     jQuery(AmpelPluginRenderer);
 } catch (e) {
-    log(e);
+    window.console && console.log(e);
 }

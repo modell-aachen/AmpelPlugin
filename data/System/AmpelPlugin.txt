@@ -32,6 +32,9 @@ where
 | DONE | _disabled_ | You can specify a column here in which certain keywords will disable the traffic light. |
 | COND | _disabled_ | If this regular expression is matched in the DONE column (with /../i) the traffic light will be disabled. |
 | WCOND | _disabled_ | If no date is beeing found but this RegEx matches the light will turn amber |
+| GREENOVERRIDE | _disabled_ | When this condition matches the DONE column, the light will turn green. |
+| AMBEROVERRIDE | _disabled_ | When this condition matches the DONE column, the light will turn amber. Overrides GREENOVERRIDE. |
+| REDOVERRIDE | _disabled_ | When this condition matches the DONE column, the light will turn red. Overrides REDOVERRIDE. |
 | QUERY | _nothing_ | Every table/div that matches this (JQuery-) selector will receive a traffic light.%BR%%I%This parameter will be overwritten by =_DEFAULT=. |
 | printable | 1 | This light will be printable with prince. Set to 0 to disable. |
 *The contents of the DST column will not be displayed!*

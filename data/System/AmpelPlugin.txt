@@ -90,18 +90,15 @@ If you want to disable printing lights by default disable ={Extensions}{AmpelPlu
 
 ---++ Info
 
-Many thanks to the following sponsors for supporting this work:
-   * Acknowledge any sponsors here
-
-|  Author(s): | |
-|  Copyright: | &copy; |
+|  Author(s): | Modell Aachen GmbH |
+|  Copyright: | &copy; Modell Aachen GmbH 2012-2015 |
 |  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
 |  Dependencies: | %$DEPENDENCIES% |
-|  Home page: | http://extensions.open-quality.com/bin/view/Extensions/AmpelPlugin |
-|  Support: | http://extensions.open-quality.com/bin/view/Support/AmpelPlugin |
+|  Home | http://www.modell-aachen.de |
+|  Feedback | support(at)modell-aachen(dot)de |
 
 %META:FILEATTACHMENT{name="example.png" attachment="example.png" attr="" comment="" date="1312283293" size="12739" user="BaseUserMapping_333" version="1"}%
 %META:FILEATTACHMENT{name="example2.png" attachment="example2.png" attr="" comment="" date="1312283293" size="12618" user="BaseUserMapping_333" version="1"}%

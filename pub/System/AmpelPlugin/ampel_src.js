@@ -226,10 +226,11 @@ function AmpelPluginRenderer($) {
                 split = /(\d\d?) (\w{3}) (\d{2,4})/.exec(str);
                 if(split !== null) {
                     var m = split[2];
-                    var monthArray = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "err");
+                    var monthDE = new Array("Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez", "err");
+                    var monthEN = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "err");
                     var gefunden = 0;
-                    for(var i = 0; i < monthArray.length; i++) {
-                        if(m == monthArray[i]) {
+                    for(var i = 0; i < monthEN.length; i++) {
+                        if(m == monthEN[i] || m == monthDE[i]) {
                             m = i;
                             gefunden = 1;
                             break;

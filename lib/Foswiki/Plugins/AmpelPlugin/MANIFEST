@@ -4,6 +4,7 @@ lib/Foswiki/Plugins/AmpelPlugin/Config.spec 0644 Configuration
 lib/Foswiki/Plugins/AmpelPlugin.pm 0644 Perl module that handles the macro
 pub/System/AmpelPlugin/ampel.js 0755 Script that handles the tables
 pub/System/AmpelPlugin/ampel.js.gz 0755 Script that handles the tables
+pub/System/AmpelPlugin/images/ampel.png 0755 Gray indicator
 pub/System/AmpelPlugin/images/ampel_g.png 0755 Green indicator
 pub/System/AmpelPlugin/images/ampel_o.png 0755 Amber indicator
 pub/System/AmpelPlugin/images/ampel_r.png 0755 Red indicator

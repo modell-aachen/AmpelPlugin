@@ -28,6 +28,7 @@ use Foswiki::Func    ();    # The plugins API
 use Foswiki::Plugins ();    # For the API version
 
 use JSON;
+use POSIX;
 
 our $VERSION = '1.2';
 
@@ -49,9 +50,49 @@ sub initPlugin {
     }
 
     Foswiki::Func::registerTagHandler( 'AMPEL', \&_AMPELTAG );
+    Foswiki::Func::registerTagHandler( 'SIGNAL', \&_SIGNALTAG );
 
     # Plugin correctly initialized
     return 1;
+}
+
+sub _SIGNALTAG {
+    my( $session, $params, $topic, $web, $topicObject ) = @_;
+
+    my $title = '%MAKETEXT{"Missing due date"}%';
+    my $date = $params->{_DEFAULT} || $params->{date};
+    my $status = $params->{status} || 'open';
+    my $warn = $params->{warn} || 3;
+
+    return "<img src=\"%PUBURL%/%SYSTEMWEB%/AmpelPlugin/images/ampel.png\" alt=\"\" title=\"$title\" />" if ( !$date && $status eq 'open' );
+
+    my $src = '';
+    if ( $status eq 'open' ) {
+        my $now = scalar time();
+        my $secs = $date;
+        $secs = Foswiki::Time::parseTime($date) unless $secs =~ /^\d+$/;
+        my $offset = $warn * 24 * 60 * 60;
+        my $state = 'g';
+        $state = 'o' if $now  + $offset > $secs;
+        $state = 'r' if $now >= $secs;
+        $src = "%PUBURL%/%SYSTEMWEB%/AmpelPlugin/images/ampel_$state.png";
+
+        my $delta = ($secs - $now)/86400;
+        my $abs = ceil(abs($delta));
+        $title = '%MAKETEXT{"In one day"}%' if $delta > 0 && $delta <= 1;
+        $title = "%MAKETEXT{\"In [_1] days\" args=\"$abs\"}%" if $delta > 1;
+        $title = '%MAKETEXT{"One day over due"}%' if $delta >= -2 && $delta < -1;
+        $title = '%MAKETEXT{"This very day"}%' if $delta >= -1 && $delta < 0;
+        $title = "%MAKETEXT{\"[_1] days over due\" args=\"$abs\"}%" if $delta < -2;
+    } else {
+        $src = "%PUBURL%/%SYSTEMWEB%/FamFamFamSilkIcons/".($status eq 'closed' ? 'tick' : 'cross').".png";
+    }
+
+    my $img = <<IMG;
+<img src="$src" alt="" title="$title" />
+IMG
+
+    return $img;
 }
 
 sub _AMPELTAG {

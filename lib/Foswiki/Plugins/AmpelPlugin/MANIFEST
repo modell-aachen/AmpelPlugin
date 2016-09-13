@@ -9,4 +9,4 @@ pub/System/AmpelPlugin/images/ampel_g.png 0755 Green indicator
 pub/System/AmpelPlugin/images/ampel_o.png 0755 Amber indicator
 pub/System/AmpelPlugin/images/ampel_r.png 0755 Red indicator
 pub/System/AmpelPlugin/example.png 0755 Picture of the example
-
+locale/AmpelPlugin/de.po 0644

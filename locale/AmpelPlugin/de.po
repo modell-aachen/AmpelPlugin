@@ -1,0 +1,34 @@
+# Plugin: AmpelPlugin
+# Foswiki translation for: Deutsch
+msgid ""
+msgstr ""
+"Project-Id-Version: Foswiki $Id\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-01-12 11:29+0100\n"
+"Last-Translator: Modell Aachen <support@modell-aachen.de>\n"
+"Language-Team: Foswiki German Translation Team <none>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.1.6\n"
+
+msgid "Missing due date"
+msgstr "Fehlendes Fälligkeitsdatum"
+
+msgid "In one day"
+msgstr "In einem Tag"
+
+msgid "One day over due"
+msgstr "Seit einem Tag abgelaufen"
+
+msgid "In %1 days"
+msgstr "In %1 Tagen"
+
+msgid "%1 days over due"
+msgstr "Seit %1 Tagen abgelaufen"
+
+msgid "This very day"
+msgstr "Noch heute"

@@ -97,8 +97,8 @@ sub _SIGNALTAG {
         $title = '%MAKETEXT{"In one day"}%' if $delta > 0 && $delta <= 1;
         $title = "%MAKETEXT{\"In [_1] days\" args=\"$abs\"}%" if $delta > 1;
         $title = '%MAKETEXT{"One day over due"}%' if $delta >= -2 && $delta < -1;
-        $title = '%MAKETEXT{"This very day"}%' if $delta >= -1 && $delta <= 0;
-        $title = "%MAKETEXT{\"[_1] days over due\" args=\"$abs\"}%" if $delta < -2;
+        $title = '%MAKETEXT{"This very day"}%' if $delta > -1 && $delta <= 0;
+        $title = "%MAKETEXT{\"[_1] days over due\" args=\"$abs\"}%" if $delta <= -1;
     } else {
         $src = "%PUBURL%/%SYSTEMWEB%/FamFamFamSilkIcons/".($status eq 'closed' ? 'tick' : 'cross').".png";
     }

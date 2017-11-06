@@ -56,6 +56,17 @@ sub initPlugin {
     return 1;
 }
 
+sub _subTimeFromEpochDate{
+    my $epoch  = shift;
+    my ($sec, $min, $hour, $day,$month,$year) = (localtime($epoch))[0,1,2,3,4,5];
+
+    my $newEpoch = $epoch;
+    $newEpoch= $newEpoch - $hour*60*60 if $hour > 0;
+    $newEpoch = $newEpoch - $min*60 if $min > 0;
+    $newEpoch = $newEpoch - $sec if $sec > 0;
+    return $newEpoch;
+}
+
 sub _SIGNALTAG {
     my( $session, $params, $topic, $web, $topicObject ) = @_;
 
@@ -69,12 +80,16 @@ sub _SIGNALTAG {
     my $src = '';
     if ( $status eq 'open' ) {
         my $now = scalar time();
+        $now = _subTimeFromEpochDate($now);
+
         my $secs = $date;
         $secs = Foswiki::Time::parseTime($date) unless $secs =~ /^\d+$/;
+        $secs = _subTimeFromEpochDate($secs);
+
         my $offset = $warn * 24 * 60 * 60;
         my $state = 'g';
         $state = 'o' if $now  + $offset > $secs;
-        $state = 'r' if $now >= $secs;
+        $state = 'r' if $now > $secs;
         $src = "%PUBURL%/%SYSTEMWEB%/AmpelPlugin/images/ampel_$state.png";
 
         my $delta = ($secs - $now)/86400;
@@ -82,8 +97,8 @@ sub _SIGNALTAG {
         $title = '%MAKETEXT{"In one day"}%' if $delta > 0 && $delta <= 1;
         $title = "%MAKETEXT{\"In [_1] days\" args=\"$abs\"}%" if $delta > 1;
         $title = '%MAKETEXT{"One day over due"}%' if $delta >= -2 && $delta < -1;
-        $title = '%MAKETEXT{"This very day"}%' if $delta >= -1 && $delta < 0;
-        $title = "%MAKETEXT{\"[_1] days over due\" args=\"$abs\"}%" if $delta < -2;
+        $title = '%MAKETEXT{"This very day"}%' if $delta > -1 && $delta <= 0;
+        $title = "%MAKETEXT{\"[_1] days over due\" args=\"$abs\"}%" if $delta <= -1;
     } else {
         $src = "%PUBURL%/%SYSTEMWEB%/FamFamFamSilkIcons/".($status eq 'closed' ? 'tick' : 'cross').".png";
     }
